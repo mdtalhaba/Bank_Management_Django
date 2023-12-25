@@ -1,11 +1,12 @@
 from django import forms
 from .models import Transaction
-
-
 class TransactionForm(forms.ModelForm):
     class Meta:
         model = Transaction
-        fields = ['amount', 'transaction_type']
+        fields = [
+            'amount',
+            'transaction_type'
+        ]
 
     def __init__(self, *args, **kwargs):
         self.account = kwargs.pop('account')
@@ -24,7 +25,9 @@ class DepositForm(TransactionForm):
         min_deposit_amount = 100
         amount = self.cleaned_data.get('amount')
         if amount < min_deposit_amount:
-            raise forms.ValidationError(f'Minimum Deposit is {min_deposit_amount} $')
+            raise forms.ValidationError(
+                f'You need to deposit at least {min_deposit_amount} $'
+            )
 
         return amount
 
@@ -39,17 +42,18 @@ class WithdrawForm(TransactionForm):
         amount = self.cleaned_data.get('amount')
         if amount < min_withdraw_amount:
             raise forms.ValidationError(
-                f'Minimum Withdraw Amount {min_withdraw_amount} $'
+                f'You can withdraw at least {min_withdraw_amount} $'
             )
 
         if amount > max_withdraw_amount:
             raise forms.ValidationError(
-                f'Maximum Withdraw Amount {max_withdraw_amount} $'
+                f'You can withdraw at most {max_withdraw_amount} $'
             )
 
         if amount > balance:
             raise forms.ValidationError(
-                f'You have {balance} $ in your account. You can not withdraw more than your account balance'
+                f'You have {balance} $ in your account. '
+                'You can not withdraw more than your account balance'
             )
 
         return amount

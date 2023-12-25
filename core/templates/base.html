@@ -9,25 +9,25 @@
             {% block head_title %}Banking System{% endblock head_title %}
         </title>
         <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
-{% comment %} 
+
         {% block head_extra %}{% endblock %}
-        <style>
-            footer {
+       <style>
+            {% comment %} footer {
                 position: fixed !important;
                 bottom: 0 !important;
                 width: 100%;
-            }
-        </style> {% endcomment %}
+            } {% endcomment %}
+        </style>
     </head>
     <body class="bg-indigo-600">
         {% include 'navbar.html' %}
         {% block body %}
             <div class="lg:container lg:mx-auto" id="main">
-                {% comment %} {% include 'messages.html' %} {% endcomment %}
+                {% include 'messages.html' %}
                 {% block content %}
                 {% endblock content %}
             </div>
-            {% comment %} {% include 'footer.html' %} {% endcomment %}
+            {% include 'footer.html' %}
 
         {% endblock body %}
     </body>
