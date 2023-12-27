@@ -30,7 +30,7 @@ SECRET_KEY = env("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -105,7 +105,7 @@ WSGI_APPLICATION = 'my_bank.wsgi.application'
 DATABASES = {
     'default': dj_database_url.config(
         # Feel free to alter this value to suit your needs.
-        default='postgres://deulia_bank_user:1kSKLPpyWpkksoAMOstjd3qifV7IXfYj@dpg-cm65s2ed3nmc73ap6cj0-a.oregon-postgres.render.com/deulia_bank',
+        default='postgres://deulia_bank_oy3h_user:jF8A01kmEiCsGHWYwWsIut7JsTKknyUv@dpg-cm665omn7f5s73e8nj7g-a.oregon-postgres.render.com/deulia_bank_oy3h',
     )
 }
 
