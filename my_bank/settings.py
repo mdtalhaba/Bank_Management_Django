@@ -104,10 +104,10 @@ WSGI_APPLICATION = 'my_bank.wsgi.application'
 
 DATABASES = {
     'default': dj_database_url.config(
-        # Feel free to alter this value to suit your needs.
         default='postgres://deulia_bank_oy3h_user:jF8A01kmEiCsGHWYwWsIut7JsTKknyUv@dpg-cm665omn7f5s73e8nj7g-a.oregon-postgres.render.com/deulia_bank_oy3h',
     )
 }
+
 
 
 # Password validation
