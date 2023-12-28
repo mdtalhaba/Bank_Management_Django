@@ -102,12 +102,13 @@ WSGI_APPLICATION = 'my_bank.wsgi.application'
 #     }
 # }
 
+
 DATABASES = {
     'default': dj_database_url.config(
-        default='postgres://deulia_bank_oy3h_user:jF8A01kmEiCsGHWYwWsIut7JsTKknyUv@dpg-cm665omn7f5s73e8nj7g-a.oregon-postgres.render.com/deulia_bank_oy3h',
+        # Feel free to alter this value to suit your needs.
+        default='postgres://bankmanagementdjango_user:eyv600F67reID7zhuXHA9QbeugBUloda@dpg-cm6iu66n7f5s73e9eak0-a.oregon-postgres.render.com/bankmanagementdjango',
     )
 }
-
 
 
 # Password validation
