@@ -12,4 +12,4 @@ class Transaction(models.Model):
     loan_approve = models.BooleanField(default=False) 
     
     class Meta:
-        ordering = ['timestamp'] 
+        ordering = ['timestamp']

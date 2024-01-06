@@ -12,21 +12,23 @@
 
         {% block head_extra %}{% endblock %}
        <style>
-            {% comment %} footer {
+            footer {
                 position: fixed !important;
                 bottom: 0 !important;
                 width: 100%;
-            } {% endcomment %}
+            }
         </style>
     </head>
-    <body class="bg-indigo-600">
-        {% include 'navbar.html' %}
+    <body class="bg-blue-200">
+        <header>
+            {% include 'navbar.html' %}
+        </header>
         {% block body %}
-            <div class="lg:container lg:mx-auto" id="main">
+            <main class="lg:container lg:mx-auto py-24 min-h-screen" id="main">
                 {% include 'messages.html' %}
                 {% block content %}
                 {% endblock content %}
-            </div>
+            </main>
             {% include 'footer.html' %}
 
         {% endblock body %}

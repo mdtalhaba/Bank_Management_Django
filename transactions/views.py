@@ -2,17 +2,19 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.utils import timezone
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
 from django.http import HttpResponse
 from django.views.generic import CreateView, ListView
-from transactions.constants import DEPOSIT, WITHDRAWAL,LOAN, LOAN_PAID
+from .constants import DEPOSIT, WITHDRAWAL, LOAN, LOAN_PAID, TRANSFER, RECEIVED
 from datetime import datetime
 from django.db.models import Sum
-from transactions.forms import DepositForm, WithdrawForm, LoanRequestForm
+from .forms import DepositForm, WithdrawForm, LoanRequestForm
 from django.core.mail import EmailMessage, EmailMultiAlternatives
 from django.template.loader import render_to_string
-from transactions.models import Transaction
+from .models import Transaction
+from .forms import TransferForm
+from accounts.models import UserBankAccount
 
 
 def send_transaction_email(user, amount, subject, template):
@@ -43,7 +45,6 @@ class TransactionCreateMixin(LoginRequiredMixin, CreateView):
 
         return context
 
-
 class DepositMoneyView(TransactionCreateMixin):
     form_class = DepositForm
     title = 'Deposit'
@@ -71,7 +72,6 @@ class DepositMoneyView(TransactionCreateMixin):
         )
         send_transaction_email(self.request.user, amount, 'Deposit Message', 'transactions/deposit_email.html')
         return super().form_valid(form)
-
 
 class WithdrawMoneyView(TransactionCreateMixin):
     form_class = WithdrawForm
@@ -148,7 +148,6 @@ class TransactionReportView(LoginRequiredMixin, ListView):
 
         return context
     
-        
 class PayLoanView(LoginRequiredMixin, View):
     def get(self, request, loan_id):
         loan = get_object_or_404(Transaction, id=loan_id)
@@ -171,7 +170,6 @@ class PayLoanView(LoginRequiredMixin, View):
 
         return redirect('loan_list')
 
-
 class LoanListView(LoginRequiredMixin,ListView):
     model = Transaction
     template_name = 'transactions/loan_request.html'
@@ -182,3 +180,55 @@ class LoanListView(LoginRequiredMixin,ListView):
         queryset = Transaction.objects.filter(account=user_account,transaction_type=3)
         print(queryset)
         return queryset
+    
+class TransferView(LoginRequiredMixin,View):
+    template_name = 'transactions/transfer.html'
+
+    def get(self, request):
+        form = TransferForm
+        return render(request, self.template_name, {'form': form, 'title': 'Transfer Money'})
+    
+    def post(self, request):
+        form = TransferForm(request.POST)
+
+        if form.is_valid():
+            amount = form.cleaned_data.get('amount')
+            to_account = form.cleaned_data.get('to_account')
+
+            sender = request.user.account
+
+            min_amount = 1000
+            if amount >= min_amount :
+                if amount <= sender.balance :
+                    try :
+                        receiver = UserBankAccount.objects.get(account_number=to_account)
+                        receiver.balance += amount
+                        receiver.save()
+
+                        sender.balance -= amount
+                        sender.save()
+
+                        Transaction.objects.create(
+                            account=receiver,
+                            amount=amount,
+                            balance_after_transaction=receiver.balance,
+                            transaction_type=RECEIVED
+                        )
+
+                        Transaction.objects.create(
+                            account=sender,
+                            amount=amount,
+                            balance_after_transaction=sender.balance,
+                            transaction_type=TRANSFER
+                        )
+
+                        messages.success(request, f"Your Balance {amount} has been Transfered Successfully.")
+
+                    except UserBankAccount.DoesNotExist:
+                        messages.error(request, "Account does not exist")
+                else :
+                    messages.error(request, "Insufficient Balance")
+            else :
+                messages.error(request, "Minimum Transfer amount is 1000")
+
+        return render(request, self.template_name, {'form': form, 'title': 'Transfer Money'})
